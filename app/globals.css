@@ -1,0 +1,402 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+   Palette: predominantly monochrome on warm paper, with ONE accent.
+   The accent ships as two tokens on purpose:
+     --accent      bright acid green, for graphic use (dots, fills, rules)
+     --accent-ink  darkened, for text and anything that must pass contrast
+   Using the bright value for text would fail WCAG on paper, so it never does.
+--------------------------------------------------------------------------- */
+:root {
+  --paper: #fff6ef;
+  --paper-raised: #ffffff;
+  --paper-sunk: #ffe4ef;
+  --ink: #1d1033;
+  /* Passes AA on all three paper surfaces (5.94:1 on the darkest, paper-sunk). */
+  --ink-muted: #6a4b86;
+  --line: #ffb0cf;
+  --accent: #ff2e88;
+  --accent-ink: #b3005c;
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-paper-raised: var(--paper-raised);
+  --color-paper-sunk: var(--paper-sunk);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+
+  --font-display: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-instrument-serif), ui-serif, Georgia, serif;
+  /* --font-mochiy is set directly by next/font in layout.tsx and read by anime
+     mode below. It is deliberately not redeclared here, because a token of the
+     same name would shadow the one next/font provides. */
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  /* Reserves the scrollbar gutter permanently. Opening an overlay hides the
+     page scrollbar, and without this the whole layout jumps sideways by its
+     width at the moment the overlay appears. */
+  scrollbar-gutter: stable;
+}
+
+/* Lenis requirements. The class is added to <html> once it initialises, so
+   none of this applies when smooth scrolling is off (reduced motion, or before
+   the script lands). Native scroll-behaviour has to yield or the two fight. */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-synthesis-weight: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--ink);
+}
+
+/* These live in @layer components on purpose. Unlayered CSS wins over
+   Tailwind's utilities layer regardless of source order, so defining
+   `.meta { color: ... }` outside a layer made every `text-*` utility used
+   alongside it a no-op. That is how the hero CTA ended up at 2.5:1. */
+@layer components {
+  /* ---------------------------------------------------------------------------
+     Typographic primitives. Display type is tight and confident; metadata is
+     small, spaced and uppercase. The contrast between the two is the whole
+     visual system, so these two classes carry most of the design.
+  --------------------------------------------------------------------------- */
+  .display {
+    font-family: var(--font-display);
+    font-weight: 500;
+    letter-spacing: -0.03em;
+    line-height: 0.95;
+    text-wrap: balance;
+  }
+
+  .meta {
+    font-family: var(--font-display);
+    font-size: 0.6875rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+  }
+
+  .editorial {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    letter-spacing: -0.01em;
+  }
+
+  /* The per-word clipping box used by the headline reveal.
+     The vertical padding matters: .display runs a 0.95 line-height, so a mask
+     sized to the line box clips the tops of ascenders and the tails of
+     descenders. Padding gives the glyphs room, and the matching negative margin
+     keeps the word occupying its original space in the line. The word still
+     animates in from below the box, so the reveal is unaffected. */
+  .mask-word {
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: bottom;
+    padding-top: 0.2em;
+    margin-top: -0.2em;
+    padding-bottom: 0.16em;
+    margin-bottom: -0.16em;
+  }
+
+  /* An annotation: the tiny asides scattered through the page. */
+  .annotation {
+    font-family: var(--font-display);
+    font-size: 0.625rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+  }
+
+  /* Placeholder frames for assets that do not exist yet. Deliberately visible:
+     an empty slot that looks intentional beats a fabricated screenshot. */
+  .frame-placeholder {
+    background-color: var(--paper-sunk);
+    background-image: repeating-linear-gradient(
+      45deg,
+      transparent 0 10px,
+      color-mix(in srgb, var(--line) 55%, transparent) 10px 11px
+    );
+    border: 1px solid var(--line);
+  }
+}
+
+/* Tape reels. Paused via animation-play-state when nothing is playing, and
+   flattened to a single frame by the reduced-motion block below. */
+@keyframes reel-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Accessibility: a real focus ring, never removed. */
+:focus-visible {
+  outline: 2px solid var(--accent-ink);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* The custom cursor hides the native one, but only once JS has confirmed a
+   fine pointer. If the script never runs, the native cursor stays. */
+html[data-cursor="custom"],
+html[data-cursor="custom"] * {
+  cursor: none;
+}
+
+/* ---------------------------------------------------------------------------
+   Reduced motion: strip decoration, keep everything readable and complete.
+   Components also read this at runtime so scroll reveals resolve to visible
+   rather than relying on a transition that no longer fires.
+--------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   The manga treatment: screentone, panel frames, speed lines and impact type.
+   Every colour was checked against WCAG AA on its own surface; fun is not a
+   reason to stop being readable.
+--------------------------------------------------------------------------- */
+/* Screentone. One fixed layer of dots over the whole page, the way a manga
+   panel gets its shading. Fixed so it does not repaint on scroll. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;
+  opacity: 0.18;
+  background-image: radial-gradient(var(--ink) 1px, transparent 1.2px);
+  background-size: 11px 11px;
+}
+
+@media (min-width: 48rem) {
+  body::before {
+    opacity: 0.22;
+    background-size: 8px 8px;
+  }
+}
+
+/* Manga panels: each section becomes a framed cell with a hard offset shadow. */
+main > section {
+  position: relative;
+  z-index: 2;
+  border: 2px solid var(--ink);
+  border-radius: 12px;
+  margin: 0 8px 12px;
+  box-shadow: 4px 4px 0 0 var(--accent);
+  overflow: hidden;
+}
+
+@media (min-width: 48rem) {
+  main > section {
+    border-width: 3px;
+    border-radius: 18px;
+    margin: 0 12px 20px;
+    box-shadow: 8px 8px 0 0 var(--accent);
+  }
+}
+
+/* Impact lettering. The heavy face plus a hard offset is most of the look. */
+.display {
+  font-family: var(--font-mochiy), var(--font-display);
+  letter-spacing: 0;
+  /* Mochiy sits taller in its em box than Space Grotesk; 0.95 crops it. */
+  line-height: 1.08;
+}
+
+/* Shadow only on headings. At body size it reads as a double image, not impact. */
+h1.display,
+h2.display,
+h3.display {
+  text-shadow: 2px 2px 0 var(--accent);
+}
+
+/* On the inverted panel the accent shadow muddies white text, so drop it. */
+.bg-ink h2.display {
+  text-shadow: none;
+}
+
+.editorial {
+  font-style: italic;
+}
+
+/* Speed lines behind the hero, radiating from the top left.
+   Desktop only: a repeating conic gradient under a radial mask is the heaviest
+   paint on the page, and it buys nothing on a small screen. */
+@media (min-width: 48rem) {
+#hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.16;
+  background: repeating-conic-gradient(
+    from 0deg at 18% 28%,
+    var(--accent) 0deg 0.7deg,
+    transparent 0.7deg 5deg
+  );
+  mask-image: radial-gradient(circle at 18% 28%, transparent 22%, #000 62%);
+}
+}
+
+/* Chunky, pressable buttons: bigger type in the display face, a hard offset,
+   and a real press on click. */
+.meta.rounded-full {
+  font-family: var(--font-mochiy), var(--font-display);
+  font-size: 0.82rem;
+  /* Keeps every pill at or above the 44px touch target minimum. */
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  letter-spacing: 0.05em;
+  border-width: 2px;
+  border-color: var(--ink);
+  box-shadow: 4px 4px 0 0 var(--ink);
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease;
+}
+
+.meta.rounded-full:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 6px 6px 0 0 var(--ink);
+}
+
+.meta.rounded-full:active {
+  transform: translate(3px, 3px);
+  box-shadow: 1px 1px 0 0 var(--ink);
+}
+
+/* The primary CTA goes accent-on-ink-text, which is the loudest readable pair
+   in this palette at 5.1:1. */
+.meta.rounded-full.bg-ink {
+  background-color: var(--accent);
+  color: var(--ink);
+}
+
+/* The secondary sits on paper so it still reads as the quieter option. */
+.meta.rounded-full.border-line {
+  background-color: var(--paper-raised);
+  color: var(--ink);
+}
+
+
+/* Falling petals. */
+.anime-petals {
+  position: fixed;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.anime-petals span {
+  position: absolute;
+  top: -6vh;
+  width: 12px;
+  height: 12px;
+  background: var(--accent);
+  border-radius: 12px 0 12px 0;
+  opacity: 0.75;
+  animation-name: petal-fall;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+@keyframes petal-fall {
+  from {
+    transform: translateY(-10vh) rotate(0deg);
+  }
+  to {
+    transform: translateY(110vh) rotate(540deg);
+  }
+}
+
+@media (max-width: 47.99rem) {
+  .anime-petals span:nth-child(2n) {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .anime-petals {
+    display: none;
+  }
+}
+
+/* The anime panel sequence. It only ever renders in anime mode, so these rules
+   are unconditional; the component is what gates them. */
+.anime-flow {
+  position: relative;
+  z-index: 2;
+  border: 3px solid var(--ink);
+  border-radius: 18px;
+  margin: 0 12px 20px;
+  box-shadow: 8px 8px 0 0 var(--accent);
+  overflow: hidden;
+}
+
+.anime-frame {
+  box-shadow: 3px 3px 0 0 var(--ink);
+  will-change: transform;
+}
+
+@media (min-width: 48rem) {
+  .anime-frame {
+    box-shadow: 6px 6px 0 0 var(--ink);
+  }
+}
+
+/* Gutter between the art cell and the caption, the way a panel edge reads. */
+.anime-frame > *:first-child {
+  border-bottom: 3px solid var(--ink);
+}
+
+@media (min-width: 768px) {
+  .anime-frame > *:first-child {
+    border-bottom: 0;
+    border-right: 3px solid var(--ink);
+  }
+  .anime-frame.md\:\[\&\>\*\:first-child\]\:order-2 > *:first-child {
+    border-right: 0;
+    border-left: 3px solid var(--ink);
+  }
+}
