@@ -14,15 +14,21 @@ export const profile = {
     "I work across content, research, digital strategy and technology, exploring how ideas can be turned into useful things.",
   location: "Mumbai, India",
   status: "Currently exploring AI × Content × Systems",
-  /** Drop a file in /public and put its path here. Empty string renders the editorial placeholder. */
-  portrait: "",
-  portraitAlt: "Krish Patil",
+  /** The illustrated portrait, shown by default. Empty renders the placeholder frame. */
+  portrait: "/portrait-illustration.jpg",
+  portraitAlt: "Illustrated portrait of Krish Patil",
+  /** The real photograph, revealed on hover. Optional. */
+  portraitPhoto: "/portrait-photo.jpg",
 };
 
 export const socials = [
   { label: "Email", href: "mailto:krrishp447@gmail.com", display: "krrishp447@gmail.com" },
   { label: "Résumé", href: "/resume.pdf", display: "Download PDF" },
-  { label: "LinkedIn", href: "", display: "[ADD LINK]" },
+  {
+    label: "LinkedIn",
+    href: "https://www.linkedin.com/in/krrish-patil-8619a9275/",
+    display: "krrish-patil",
+  },
   { label: "Instagram", href: "", display: "[ADD LINK]" },
 ] as const;
 

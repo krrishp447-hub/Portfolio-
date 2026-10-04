@@ -4,6 +4,7 @@ import { SectionHeader } from "./SectionHeader";
 
 const statusLabel = {
   running: "In use",
+  demo: "Live demo",
   prototype: "Prototype",
   idea: "Not built yet",
 } as const;
@@ -32,7 +33,9 @@ export function Build() {
                 <div className="flex flex-wrap items-baseline justify-between gap-3">
                   <h3 className="display text-[clamp(1.2rem,3vw,1.75rem)] uppercase">{e.title}</h3>
                   <span
-                    className={`meta ${e.status === "running" ? "text-accent-ink" : ""}`}
+                    className={`meta ${
+                      e.status === "running" || e.status === "demo" ? "text-accent-ink" : ""
+                    }`}
                   >
                     {statusLabel[e.status]}
                   </span>
@@ -55,6 +58,24 @@ export function Build() {
                     </span>
                   ))}
                 </p>
+
+                {e.link && (
+                  <a
+                    href={e.link.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    data-cursor="open"
+                    className="meta group/link mt-4 inline-flex items-center gap-2 text-accent-ink"
+                  >
+                    <span className="border-b border-accent-ink pb-0.5">{e.link.label}</span>
+                    <span
+                      aria-hidden="true"
+                      className="transition-transform group-hover/link:translate-x-1"
+                    >
+                      ↗
+                    </span>
+                  </a>
+                )}
 
                 <ul className="mt-4 flex flex-wrap gap-2">
                   {e.stack.map((s) => (

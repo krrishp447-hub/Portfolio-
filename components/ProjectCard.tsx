@@ -2,6 +2,7 @@
 
 import type { Project } from "@/data/projects";
 import { AssetFrame } from "./AssetFrame";
+import { InstagramEmbed } from "./InstagramEmbed";
 import { Reveal } from "./Reveal";
 import { RevealText } from "./RevealText";
 import { Parallax } from "./Parallax";
@@ -88,7 +89,8 @@ export function ProjectCard({
                   hint={i === 0 && !asset ? project.placeholderHint : undefined}
                   ratio="4/3"
                   priority={index === 0 && i === 0}
-                />
+                onOpen={() => onOpen(project)}
+              />
               </div>
             );
           })}
@@ -118,7 +120,8 @@ export function ProjectCard({
 
         {banner && (
           <Parallax className="mt-6" shift={22} scale>
-            <AssetFrame asset={banner} />
+            <AssetFrame asset={banner} onOpen={() => onOpen(project)}
+              />
           </Parallax>
         )}
 
@@ -140,6 +143,7 @@ export function ProjectCard({
                 asset={rest[i]}
                 hint={i === 0 && !rest[i] ? project.placeholderHint : undefined}
                 ratio="16/9"
+              onOpen={() => onOpen(project)}
               />
             ))}
           </Parallax>
@@ -149,10 +153,22 @@ export function ProjectCard({
   }
 
   // 'type', typographic composition, the title doing the work
+  const typeBanner = project.assets.find((a) => a.span);
+  const typeRest = project.assets.filter((a) => !a.span);
+
   return (
     <Reveal className="border-t border-line pt-8">
       {meta}
-      <div className="mt-5 grid gap-8 lg:grid-cols-[0.62fr_0.38fr] lg:gap-16">
+
+      {/* The grid shows the handle at a glance; the clips below show the work. */}
+      {typeBanner && (
+        <Parallax className="mt-6" shift={22} scale>
+          <AssetFrame asset={typeBanner} onOpen={() => onOpen(project)}
+              />
+        </Parallax>
+      )}
+
+      <div className="mt-8 grid gap-8 lg:grid-cols-[0.62fr_0.38fr] lg:gap-16">
         <div>
           <RevealText as="h3" className="display text-[clamp(2.5rem,10vw,7rem)] uppercase leading-[0.9]">
             {project.title}
@@ -162,12 +178,21 @@ export function ProjectCard({
           </p>
           {open}
         </div>
-        <div className="flex flex-col justify-end gap-3">
-          <p className="annotation">{project.placeholderHint}</p>
-          {Array.from({ length: project.placeholderFrames }).map((_, i) => (
-            <AssetFrame key={i} asset={project.assets[i]} ratio="16/9" />
-          ))}
-        </div>
+        {project.embeds?.length ? (
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+            {project.embeds.map((e) => (
+              <InstagramEmbed key={e.url} url={e.url} title={e.title} />
+            ))}
+          </div>
+        ) : (
+          <div className="flex flex-col justify-end gap-3">
+            <p className="annotation">{project.placeholderHint}</p>
+            {Array.from({ length: project.placeholderFrames }).map((_, i) => (
+              <AssetFrame key={i} asset={typeRest[i]} ratio="16/9" onOpen={() => onOpen(project)}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </Reveal>
   );

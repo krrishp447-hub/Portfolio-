@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { profile } from "@/data/profile";
+import { Portrait } from "./Portrait";
 import { EASE } from "./Reveal";
 import { motion, useReducedMotion } from "motion/react";
 import { Fragment } from "react";
@@ -163,21 +164,8 @@ export function Hero() {
           className="relative"
           style={{ transform: "translate3d(calc(var(--px) * 8px), calc(var(--py) * 6px), 0)" }}
         >
-          <div className="relative aspect-[3/4] w-full overflow-hidden">
-            {profile.portrait ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={profile.portrait}
-                alt={profile.portraitAlt}
-                className="h-full w-full object-cover grayscale"
-              />
-            ) : (
-              <div className="frame-placeholder flex h-full w-full flex-col justify-between p-4">
-                <span className="annotation">Portrait / to be added</span>
-                <span className="annotation">3:4 · b&amp;w · editorial crop</span>
-              </div>
-            )}
-          </div>
+          <Portrait />
+
           <p className="annotation mt-2">Fig. 01, the person in question</p>
         </div>
       </div>

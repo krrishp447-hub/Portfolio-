@@ -4,6 +4,7 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import type { Asset, Project } from "@/data/projects";
 import { AssetFrame } from "./AssetFrame";
+import { InstagramEmbed } from "./InstagramEmbed";
 import { lockScroll, unlockScroll } from "./scrollLock";
 import { ImageLightbox } from "./ImageLightbox";
 
@@ -121,6 +122,14 @@ export function CaseStudy({
                         />
                       ))}
                 </div>
+
+                {project.embeds && project.embeds.length > 0 && (
+                  <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                    {project.embeds.map((e) => (
+                      <InstagramEmbed key={e.url} url={e.url} title={e.title} />
+                    ))}
+                  </div>
+                )}
 
                 {/* The five beats */}
                 <div className="mt-20 grid gap-14 lg:grid-cols-2 lg:gap-20">

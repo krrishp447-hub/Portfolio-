@@ -39,6 +39,12 @@ export type Project = {
   learnings: string;
   /** A live link to the work itself. The strongest thing a chapter can carry. */
   link?: { label: string; href: string };
+  /**
+   * Instagram post or reel URLs, mirrored in place of still images. When this
+   * has entries the chapter shows the real posts instead of a screenshot, which
+   * is always better: the clip plays, and it stays current on its own.
+   */
+  embeds?: { url: string; title: string }[];
   assets: Asset[];
   /** Frames drawn when `assets` runs out, keeps the composition intact while gaps remain. */
   placeholderFrames: number;
@@ -70,14 +76,14 @@ export const projects: Project[] = [
     outcomes: [
       "400,000+ views across the YouTube and Instagram handles managed.",
       "₹1 lakh+ cumulative conversion value from Meta campaigns.",
-      "[ADD VERIFIED RESULT]: ROAS and campaign duration",
-      "[ADD VERIFIED RESULT]: audience retention change",
+      "1.4x ROAS on the Meta campaigns.",
+      "500+ new subscribers onto the platform.",
     ],
     learnings:
       "Writing instructions for someone who is not fluent in an interface teaches you what 'obvious' actually costs. Nothing sharpens content like an audience that will simply stop if a step is missing.",
     assets: [
       {
-        src: "/work/gen-s-life/instagram-grid.png",
+        src: "/work/gen-s-life/instagram-grid.jpg",
         alt: "Gen S Life Instagram grid showing community content, grandparents day posts and event announcements",
         caption: "Instagram grid, community formats",
         ratio: "1.9/1",
@@ -159,7 +165,7 @@ export const projects: Project[] = [
     // the channel covers, which is the point of it.
     assets: [
       {
-        src: "/work/ek-sur/instagram-grid.png",
+        src: "/work/ek-sur/instagram-grid.jpg",
         alt: "Ek Sur grid showing singers performing, including a multi-faith concert",
         caption: "Performance grid, multi-faith concert series",
         ratio: "1.9/1",
@@ -232,13 +238,35 @@ export const projects: Project[] = [
     ],
     outcomes: [
       "Improved organic reach through posting-time and format analysis.",
-      "[ADD VERIFIED RESULT]: reach or engagement change, with the before/after",
     ],
     learnings:
       "In a commodity format, the edit is the strategy. Picking the right thirty seconds out of an hour is a research problem disguised as a production one.",
+    link: {
+      label: "See the handle",
+      href: "https://www.instagram.com/tbm_insighter/",
+    },
+    // Titles are taken from each post's caption so the iframe has a real label.
+    embeds: [
+      {
+        url: "https://www.instagram.com/p/DVEAIe2iBeg/",
+        title: "Tanmay Bhat on the real reason behind instant popularity",
+      },
+      {
+        url: "https://www.instagram.com/p/DUnkAcOiMrZ/",
+        title: "Ashish Hemrajani on the five million Indians in the London of India",
+      },
+      {
+        url: "https://www.instagram.com/p/DVqmmFnCEH6/",
+        title: "Why the best salespeople get called shameless",
+      },
+      {
+        url: "https://www.instagram.com/p/DVvssnKCB5G/",
+        title: "Founders do not lose fear, they use it differently",
+      },
+    ],
     assets: [
       {
-        src: "/work/theboredmonkey/instagram-grid.png",
+        src: "/work/theboredmonkey/instagram-grid.jpg",
         alt: "TheBoredMonkey Instagram grid of short-form business and founder clips with captions",
         caption: "Short-form grid, founder and business clips",
         ratio: "1.9/1",

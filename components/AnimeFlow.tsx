@@ -94,35 +94,49 @@ export function AnimeFlow() {
             tl.to(p, { strokeDashoffset: 0, duration: 0.5, ease: "power2.inOut" }, 0.45 + i * 0.08);
           });
 
+          // Each panel only carries the art it needs, so every one of these is
+          // absent from most panels. Tweening a null target makes GSAP warn on
+          // the console, so only add the step when the element is really there.
+          const step = (
+            sel: string,
+            from: gsap.TweenVars,
+            to: gsap.TweenVars,
+            at: number,
+          ) => {
+            const el = panel.querySelector(sel);
+            if (el) tl.fromTo(el, from, to, at);
+          };
+
           // Figure rises, disc swells, ground settles.
-          tl.fromTo(
-            panel.querySelector(".fx-figure"),
+          step(
+            ".fx-figure",
             { yPercent: 14, opacity: 0 },
             { yPercent: 0, opacity: 1, duration: 0.9, ease: "power3.out" },
             0.2,
           );
-          tl.fromTo(
-            panel.querySelector(".fx-disc"),
+          step(
+            ".fx-disc",
             { scale: 0.4, transformOrigin: "50% 45%" },
             { scale: 1, duration: 1, ease: "power2.out" },
             0.1,
           );
-          tl.fromTo(
-            panel.querySelector(".fx-ground"),
+          step(
+            ".fx-ground",
             { scaleX: 0, transformOrigin: "50% 50%" },
             { scaleX: 1, duration: 0.6, ease: "power2.out" },
             0.5,
           );
 
           // Impact burst and radiating lines.
-          tl.fromTo(
-            panel.querySelector(".fx-burst"),
+          step(
+            ".fx-burst",
             { scale: 0, transformOrigin: "50% 50%" },
             { scale: 1, duration: 0.5, ease: "back.out(2)" },
             0.15,
           );
-          tl.fromTo(
-            panel.querySelectorAll(".fx-lines line"),
+          const lines = panel.querySelectorAll(".fx-lines line");
+          if (lines.length) tl.fromTo(
+            lines,
             { scaleX: 0, scaleY: 0, transformOrigin: "50% 50%", opacity: 0 },
             {
               scaleX: 1,
